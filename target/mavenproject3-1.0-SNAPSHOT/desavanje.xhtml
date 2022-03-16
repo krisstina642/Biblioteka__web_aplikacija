@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+        <h:form id="formadesavanje" class="pagepanel">
+            <p:growl showDetail="true" life="4000"/>
+            <p:menubar>
+                <f:facet name="options">
+                    <p:commandButton value="Nazad" action="desavanja" />
+                    <p:commandButton value="Profil" action="korisnik" />
+                </f:facet>
+            </p:menubar>
+            <p:panel header="#{desavanjeBean.desavanje.naziv}" style="width: 600px; margin: 0 auto;">
+                <p:panelGrid style="float: inside">
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Organizator: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{desavanjeBean.desavanje.korisnik}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Tip: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{desavanjeBean.desavanje.tip} desavanje" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Pocetak:" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{desavanjeBean.desavanje.datumOd}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="Kraj: " />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{desavanjeBean.desavanje.datumDo}" rendered="#{desavanjeBean.desavanje.datumDo ne '3000-01-01'}"/>
+                            <h:outputText value="nije definisan" rendered="#{desavanjeBean.desavanje.datumDo eq '3000-01-01'}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <h:outputText value="#{desavanjeBean.desavanje.opis}" />
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="#{desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje ne null and desavanjeBean.korisnikUcestvuje.zahtev eq 'prihvacen'}">
+                        <p:column colspan="2">
+                            <p:outputLabel style="color: blue" value="Pratite ovo desavanje"/>
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="#{desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje ne null and desavanjeBean.korisnikUcestvuje.zahtev eq 'prati'}">
+                        <p:column colspan="2">
+                            <p:outputLabel style="color: red" value="Poslali ste zahtev"/>
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="#{desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje eq null and desavanjeBean.zavrseno() eq true}">
+                        <p:column colspan="2">
+                            <p:outputLabel style="color: red" value="Ovo desavanje je zavrseno"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2" rendered="#{(desavanjeBean.desavanje.tip eq 'javno' and desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje eq null and desavanjeBean.zavrseno() eq false) or (desavanjeBean.desavanje.tip eq 'privatno' and desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje eq null) or (desavanjeBean.organizator eq true and desavanjeBean.zavrseno() ne false) or (desavanjeBean.organizator eq true and desavanjeBean.zavrseno() eq false)}">
+                            <p:commandButton value="Prati" rendered="#{desavanjeBean.desavanje.tip eq 'javno' and desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje eq null and desavanjeBean.zavrseno() eq false}" action="#{desavanjeBean.novoUcesce('prihvacen')}" update="formadesavanje" style="float: right"/>
+                            <p:commandButton value="Posalji zahtev" rendered="#{desavanjeBean.desavanje.tip eq 'privatno' and desavanjeBean.organizator eq false and desavanjeBean.korisnikUcestvuje eq null and desavanjeBean.zavrseno() ne true}" action="#{desavanjeBean.novoUcesce('prati')}" update="formadesavanje" style="float: right"/>
+                            <p:commandButton value="Zatvori Desavanje" rendered="#{desavanjeBean.organizator eq true and desavanjeBean.zavrseno() ne true}" update="formadesavanje" style="float: right" action="#{desavanjeBean.zatvori()}"/>
+                            <p:commandButton value="Aktiviraj" rendered="#{desavanjeBean.organizator eq true and desavanjeBean.zavrseno() eq true}" update="formadesavanje" style="float: right" action="#{desavanjeBean.pokreni()}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="#{desavanjeBean.desavanje.tip eq 'javno' or desavanjeBean.organizator eq true or (desavanjeBean.korisnikUcestvuje ne null and desavanjeBean.korisnikUcestvuje.zahtev eq 'prihvacen')}">
+                        <p:column >
+                            <p:outputLabel value="Dodajte komentar"/>
+                        </p:column>
+                        <p:column >
+                            <p:inputTextarea value="#{desavanjeBean.novikomentar}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row rendered="#{desavanjeBean.desavanje.tip eq 'javno' or desavanjeBean.organizator eq true or (desavanjeBean.korisnikUcestvuje ne null and desavanjeBean.korisnikUcestvuje.zahtev eq 'prihvacen')}">
+                        <p:column colspan="2">
+                            <p:commandButton value="Potvrdi" action="#{desavanjeBean.dodajKomentar()}" ajax="@form" style="float: right"></p:commandButton>
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="Komentari"  style=" margin: 0 auto; width: 600px" rendered="#{desavanjeBean.komentari ne null and desavanjeBean.komentari.size() ne 0}">
+                <p:dataList value="#{desavanjeBean.komentari}" var="k" type="none" >
+                    <p:panel>
+                        <h:commandLink action="#{profilBean.poseta(k.ko,'desavanje')}" value="#{k.ko}"/>
+                        <p:outputPanel style="width: auto">#{k.komentar}</p:outputPanel>
+                    </p:panel>
+                </p:dataList>
+            </p:panel>
+        </h:form>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+    </h:body>
+</html>
+

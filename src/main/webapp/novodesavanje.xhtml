@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <style type="text/css">
+            .ui-steps.custom {
+                margin-bottom: 30px;
+            }
+            .ui-steps.custom .ui-steps-item .ui-menuitem-link {
+                height: 10px;
+                padding: 0 1em;
+            }
+            .ui-steps.custom .ui-steps-item .ui-steps-number {
+                background-color: #0081c2;
+                color: #FFFFFF;
+                display: inline-block;
+                width: 30px;
+                border-radius: 10px;
+                margin-top: -10px;
+                margin-bottom: 10px;
+                margin-bottom: 10px;
+            }
+            .lala.ui-panelgrid>*>tr,
+            .lala.ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+                vertical-align: top;
+            }
+            .ui-inputfield {
+                width: 280px; /*what ever width you want*/
+            }
+            .centeredColumnContent{
+                text-align: center;
+            }
+            .ui-panelgrid-cell{
+                height: 50px;
+            }
+
+        </style>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+
+        <p:outputPanel class="pagepanel">
+            <h:form id="formaa">
+                <p:growl id="msg" globalOnly="true" showDetail="true" life="4000" />
+                <p:menubar>
+                    <f:facet name="options">
+                        <p:commandButton value="Nazad" action="korisnik" />
+                    </f:facet>
+                </p:menubar>
+
+                <p:panel style="width: min-content; margin: 0 auto" header="Forma za kreiranje novog Desavanja" styleClass="centeredColumnContent">
+                    <p:panelGrid style="width: max-content" styleClass="lala">
+                        <p:row>
+                            <p:column >
+                                <p:outputLabel value="Unesite Naziv:" rendered="#{desavanjeBean.trenutno eq 0}" style=" float: right"/>
+                                <p:outputLabel value="Unesite Datum pocetka:" rendered="#{desavanjeBean.trenutno eq 1}" style=" float: right"/>
+                                <p:outputLabel value="Unesite Datum kraja:" rendered="#{desavanjeBean.trenutno eq 2}" style=" float: right"/>
+                                <p:outputLabel value="Unesite Opis:" rendered="#{desavanjeBean.trenutno eq 3}" style=" float: right"/>
+                                <p:outputLabel value="Koga jos zelite da dodate:" rendered="#{desavanjeBean.trenutno eq 4}" style=" float: right"/>
+
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{desavanjeBean.novodesavanje.naziv}" rendered="#{desavanjeBean.trenutno eq 0}" style="width: 300px" >
+                                    <p:ajax event="keyup" update="b0"/>
+                                </p:inputText>
+                                <p:datePicker  value="#{desavanjeBean.pocetak}" rendered="#{desavanjeBean.trenutno eq 1}" style="width: 300px">
+                                    <p:ajax event="change" update="b1"/>
+                                </p:datePicker>
+                                <p:datePicker  value="#{desavanjeBean.kraj}" rendered="#{desavanjeBean.trenutno eq 2}" style="width: 300px">
+                                    <p:ajax event="change" update="b2"/>
+                                </p:datePicker>
+                                <p:inputTextarea value="#{desavanjeBean.novodesavanje.opis}" rendered="#{desavanjeBean.trenutno eq 3 and korisnikBean.k.tip eq 'moderator'}" style="width: 300px">
+                                    <p:ajax event="keyup" update="b3"/>
+                                </p:inputTextarea>
+                                <p:inputTextarea value="#{desavanjeBean.novodesavanje.opis}" rendered="#{desavanjeBean.trenutno eq 3 and korisnikBean.k.tip eq 'korisnik'}" style="width: 300px">
+                                    <p:ajax event="keyup" update="b32"/>
+                                </p:inputTextarea>
+                                <p:selectManyMenu value="#{desavanjeBean.ucesce}" showCheckbox="true" style="width:250px;height:200px" rendered="#{desavanjeBean.trenutno eq 4}" >
+                                    <f:selectItems value="#{desavanjeBean.korisnikPrati}" var="i" itemLabel="#{i.kogaprati}" itemValue="#{i.kogaprati}"  />
+                                </p:selectManyMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton id="b0" value="Dalje" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 0}" disabled="#{desavanjeBean.novodesavanje.naziv eq null or desavanjeBean.novodesavanje.naziv eq ''}" />
+                                <p:commandButton id="b1" value="Dalje" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 1}" disabled="#{desavanjeBean.pocetak eq null}" />
+                                <p:commandButton id="b2" value="Dalje" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 2}" disabled="#{desavanjeBean.kraj eq null or desavanjeBean.kraj eq ''}" />
+                                <p:commandButton id="b3" value="Zavrsi" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 3 and korisnikBean.k.tip eq 'moderator'}" disabled="#{desavanjeBean.novodesavanje.opis eq null or desavanjeBean.novodesavanje.opis eq ''}" />
+                                <p:commandButton id="b32" value="Dalje" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 3 and korisnikBean.k.tip eq 'korisnik'}" disabled="#{desavanjeBean.novodesavanje.opis eq null or desavanjeBean.novodesavanje.opis eq ''}" />
+                                <p:commandButton id="b4" value="Zavrsi" action="#{desavanjeBean.dalje()}" style="float: right" update="formaa" rendered="#{desavanjeBean.trenutno eq 4}"  />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2" style="margin: 0 auto">
+                                <p:steps activeIndex="#{desavanjeBean.trenutno}" styleClass="custom">
+                                    <p:menuitem value="Naziv" />
+                                    <p:menuitem value="Datum pocetka" />
+                                    <p:menuitem value="Datum kraja" />
+                                    <p:menuitem value="Opis" />
+                                    <p:menuitem value="Dodaj osobe" rendered="#{korisnikBean.k.tip eq 'korisnik'}"/>
+                                </p:steps>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+        </p:outputPanel>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+
+    </h:body>
+</html>
+

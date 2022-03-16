@@ -1,0 +1,246 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+
+CREATE DATABASE IF NOT EXISTS `knjiga` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `knjiga`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `korisnik`
+--
+
+DROP TABLE IF EXISTS `korisnik`;
+CREATE TABLE IF NOT EXISTS `korisnik` (
+  `ime` varchar(50) NOT NULL,
+  `prezime` varchar(50) NOT NULL,
+  `potvrda` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `lozinka` varchar(50) NOT NULL,
+  `tip` varchar(50) NOT NULL,
+  `grad` varchar(50) NOT NULL,
+  `drzava` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `datumrodjenja` date NOT NULL,
+  `slika` varchar(150),
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `korisnik`
+--
+
+INSERT INTO `korisnik` (`ime`, `prezime`, `potvrda`, `username`, `lozinka`, `tip`,`grad`,`drzava`,`email`,`datumrodjenja`,`slika`) VALUES
+('Aleksandar', 'Aleksic', 'potvrdjen', 'aleksandar', 'aleksandar123', 'admin', 'Beograd', 'Srbija', 'piaprogramiranje@gmail.com', '1990-05-12', 'anonymous4.jpg'),
+('Drazen', 'Dragovic', 'potvrdjen', 'drazen', 'drazen123', 'korisnik', 'Cacak', 'Srbija', 'piaprogramiranje@gmail.com', '1993-05-12', 'anonymous3.jpg'),
+('Jelica', 'Jelic', 'potvrdjen', 'jelica', 'jelica123', 'admin', 'Kragujevac', 'Srbija', 'piaprogramiranje@gmail.com', '1989-05-12', 'anonymous2.jpg'),
+('Luka', 'Lukic', 'potvrdjen', 'luka', 'luka123', 'moderator', 'Mladenovac', 'Srbija', 'piaprogramiranje@gmail.com', '1992-05-12', 'anonymous3.jpg'),
+('Sanja', 'Saric', 'potvrdjen', 'sanja', 'sanja123', 'korisnik', 'Sombor', 'Srbija', 'piaprogramiranje@gmail.com', '1990-05-12', 'anonymous2.jpg'),
+('Jana', 'Janic', 'zahtev', 'jana', 'jana123', 'korisnik', 'Sombor', 'Srbija', 'piaprogramiranje@gmail.com', '1990-06-12', 'anonymous2.jpg'),
+('Bozidar', 'Bozic', 'zahtev', 'bozidar', 'bozidar123', 'korisnik', 'Pozega', 'Srbija', 'piaprogramiranje@gmail.com', '1991-05-12', 'anonymous4.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rezervacija`
+--
+
+DROP TABLE IF EXISTS `knjiga`;
+CREATE TABLE IF NOT EXISTS `knjiga` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `naziv` varchar(100) NOT NULL,
+  `datum` date NOT NULL,
+  `opis` varchar(10000) NOT NULL,
+  `slika` varchar(10000),
+  `ocena` double NOT NULL,
+  `status` varchar(10) NOT NULL,
+  
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `rezervacija`
+--
+
+INSERT INTO `knjiga` (`id`, `naziv`, `datum`, `opis`, `slika`, `ocena`,`status`) VALUES
+(1, '1984', '2004-05-12', 'Radnja romana, smestena u London istoimene godine opisuje futuristicko totalitarno drustvo ciji oligarhijski vlastodrsci koriste najsavremenija dostignuca tehnologije i psihologije kako bi mase drzali u pokornosti. Protagonist romana je Winston Smith, sitni službenik u Ministarstvu istine zaduzen za rezimsku propagandu koji postaje razocaran svojim zivotom i pokušava izvesti pobunu koja zavrsava njegovim hapsenjem i mucenjem.','1984.jpg', 5.4,'odobrena'),
+(3, 'IGRE GLADI', '2009-05-06', 'U rusevinama podrucja nekada poznatog pod imenom Severna Amerika, nalazi se zemlja Panem, sa blistavim glavnim gradom Kapitolom i dvanaest distrikta. Kapitol je surov i okrutan, drži distrikte u pokornosti tako što ih primorava da svake godine salju po jednog decaka i jednu devojcicu, od dvanaest do osamnaest godina, koji ce ucestvovati u Igrama gladi – borbi do smrti koju uzivo prenosi televizija.','igre.jpg', 8.2,'odobrena'),
+(2, 'MARVEL STUDIOS: ILUSTROVANA ENCIKLOPEDIJA', '2020-01-01', 'Bogato ilustrovana enciklopedija Marvelovog filmskog univerzuma sa svim vaznim podacima o junacima filmskog serijala i svemu onome sto treba da znate o najpopularnijoj filmskoj fransizi 21. veka','marvel.png', 8.3, 'odobrena'),
+(4, 'Odjek proslosti', '2020-09-09', 'U ovoj knjizi Luka Miceta pruza mogucnost citaocima da u vremenu u kome zive oslusnu odjek proslosti nekog drugog doba koje je prethodilo i svojim sadrzajima oblikovalo ovo danasnje','odjekproslosti.jpg', 0, 'na cekanju'),
+(5, 'Vremeplov', '2019-03-11', 'Prica odrazava Velsove socijalisticke politicke stavove, njegov pogled na zivot i obilje, kao i savremeni gnev prema industrijskim odnosima','vremeplov.jpg', 9.1, 'odobrena'),
+(6, 'DOSTOJEVSKI: BIOGRAFIJA', '2020-04-09', 'Prema rečima Tomasa Mana, Zločin i kazna je „najveći kriminalistički roman svih vremena“. Zivot samog autora, obelezen spoljnim i unutrasnjim dramama, bio je, medjutim, gotovo jednako uzbudljiv kao i njegovi romani. Kad je s dvadeset sedam godina uhapsen iz politickih razloga, Dostojevski je u poslednjem trenutku izbegao izvrsenje smrtne presude.','dostojevski.jpg', 9.1, 'na cekanju'),
+(7, 'O sreci prijateljstva', '2017-09-01', 'Sta je prijateljstvo? Postoji li vise vrsta prijateljstva? Kako da negujem svoja prijateljstva? Kako da se nosim sa teškocama do kojih moze doci cak i u najboljim prijateljstvima? Kako mogu sebi da postanem prijatelj?','osreci.jpg', 7.9, 'na cekanju'),
+(8, 'Osnovi elektrotehnike-elektromagnetizam', '2013-09-01', 'Osnovi elektrotehnike je obavezni predmet na prvoj godini Etf-a u Beogradu.','osnovi.jpg', 7.6, 'odobrena');
+COMMIT;
+
+DROP TABLE IF EXISTS `autor`;
+CREATE TABLE IF NOT EXISTS `autor` (
+  `id` int(10) NOT NULL,
+  `idknjige` int(10) NOT NULL,
+  `ime` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `autor` (`id`,`idknjige`, `ime`) VALUES
+(1, 1, 'Dzordz Orvel'),
+(2, 2, 'Carobna Knjiga'),
+(3, 3, 'Suzan Kolins'),
+(4, 4, 'Luka Miceta'),
+(5, 5, 'H. Dž. Vels'),
+(6, 5, 'Dobs'),
+(7, 5, 'Matje Moro'),
+(8, 6, 'Andreas Guski'),
+(9, 7, 'Vilhem Smid'),
+(10, 8, 'Antonije R Djordjevic');
+
+COMMIT;
+
+DROP TABLE IF EXISTS `zanrovi`;
+CREATE TABLE IF NOT EXISTS `zanrovi` (
+  `naziv` varchar(100) NOT NULL,
+   PRIMARY KEY (`naziv`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `zanrovi` (`naziv`) VALUES
+('Horor'),
+('Drama'),
+('Enciklopedija'),
+('Komedija'),
+('Akcija'),
+('Novela'),
+('Istorija'),
+('Kuvari'),
+('Film'),
+('Strip'),
+('Triler'),
+('Pirucnik'),
+('Fantastika'),
+('Ljubavna'),
+('Psihologija'),
+('Filozofija'),
+('Autobiografija'),
+('Literatura');
+COMMIT;
+
+DROP TABLE IF EXISTS `zanroviknjiga`;
+CREATE TABLE IF NOT EXISTS `zanroviknjiga` (
+	`id` int(10) NOT NULL,
+    `idknjige` int(10) NOT NULL,
+	`naziv` varchar(100) NOT NULL,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `zanroviknjiga` (`id`, `idknjige`, `naziv`) VALUES
+(1, 1, 'Drama'),
+(2, 2, 'Film'),
+(3, 2, 'Enciklopedija'),
+(4, 2, 'Strip'),
+(5, 3, 'Fantastika'),
+(6, 3, 'Film'),
+(7, 4, 'Istorija'),
+(8, 5, 'Strip'),
+(9, 5, 'Novela'),
+(10, 6, 'Autobiografija'),
+(11, 7, 'Psihologija'),
+(12, 7, 'Filozofija'),
+(13, 8, 'Literatura');
+
+DROP TABLE IF EXISTS `desavanje`;
+CREATE TABLE IF NOT EXISTS `desavanje` (
+	`id` int(10) NOT NULL,
+	`korisnik` varchar(100) NOT NULL,
+	`naziv` varchar(100) NOT NULL,
+    `opis` varchar(1000) NOT NULL,
+    `datumOd` date NOT NULL,
+    `datumDo` date,
+    `tip` varchar(10) NOT NULL,
+    `zavrseno` int(1) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `desavanje` (`id`, `korisnik`, `naziv`, `opis`, `datumOd`, `datumDo`, `tip`, `zavrseno` ) VALUES
+(1, 'luka', 'knjizevno vece broj 1', 'okupljamo se na premijeri nove knjige1', '2020-01-12','2020-11-11','javno', '0'),
+(2, 'sanja', 'knjizevno vece broj 2', 'okupljamo se na premijeri nove knjige2', '2020-01-12','2020-11-11','privatno', '0'),
+(3, 'sanja', 'knjizevno vece broj 3', 'okupljamo se na premijeri nove knjige3', '2020-01-01','2020-03-03','privatno', '0');
+
+
+DROP TABLE IF EXISTS `citaonica`;
+CREATE TABLE IF NOT EXISTS `citaonica` (
+    `idknjige` int(10) NOT NULL,
+	`ocena` int(10) NOT NULL,	
+	`korisnik` varchar(100) NOT NULL,
+    `status` varchar(10) NOT NULL,
+	`komentar` varchar(1000),
+    `max` int(10),
+	`trenutno` int(10) ,	
+    PRIMARY KEY (`idknjige`,`korisnik`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `citaonica` ( `idknjige`,`ocena`,`korisnik`,`status`,`komentar`, `max`, `trenutno`) VALUES
+( 2, 10, 'sanja', 'procitana', 'super', 100, 100),
+( 1, 5, 'luka', 'procitana', 'super', 100, 100),
+( 2, 8, 'jelica', 'procitana', 'super', 100, 100),
+( 8, 2, 'luka', 'procitana', 'uz ovu knjigu sam plakao danima', 100, 100),
+( 8, 4, 'sanja', 'procitana', 'Hahahaha i ja', 100, 100),
+( 8, 10, 'jelica', 'procitana', 'super', 100, 100);
+
+INSERT INTO `citaonica` ( `idknjige`,`korisnik`,`status`, `max`, `trenutno`) VALUES
+( 1, 'sanja', 'cita', 100, 0),
+( 3, 'jelica', 'cita', 100, 0);
+
+DROP TABLE IF EXISTS `pracenje`;
+CREATE TABLE IF NOT EXISTS `pracenje` (
+	`id` int(10) NOT NULL,
+    `kojiprati` varchar(50) NOT NULL,
+	`kogaprati` varchar(50) NOT NULL,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `pracenje` (`id`, `kojiprati`, `kogaprati`) VALUES
+(1, 'jelica', 'sanja'),
+(2, 'luka', 'jelica'),
+(3, 'luka', 'sanja'),
+(4, 'sanja', 'jelica');
+
+DROP TABLE IF EXISTS `ucesce`;
+CREATE TABLE IF NOT EXISTS `ucesce` (
+	`id` int(10) NOT NULL,
+    `ko` varchar(50) NOT NULL,
+	`idDesavanja` int(10) NOT NULL,
+    `zahtev` varchar(10) NOT NULL,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `ucesce` (`id`, `ko`, `idDesavanja`,`zahtev`) VALUES
+(1, 'jelica', '1', 'prihvacen'),
+(2, 'luka', '1', 'prihvacen');
+
+DROP TABLE IF EXISTS `komentaridogadjaja`;
+CREATE TABLE IF NOT EXISTS `komentaridogadjaja` (
+	`id` int(10) NOT NULL,
+    `ko` varchar(50) NOT NULL,
+	`idDesavanja` int(10) NOT NULL,
+    `komentar` varchar(1000) NOT NULL,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `komentaridogadjaja` (`id`, `ko`, `idDesavanja`, `komentar`) VALUES
+(1, 'jelica', '1', 'jedva cekam'),
+(2, 'luka', '1', 'wou vrlo interesantno'),
+(3, 'luka', '2', 'wou vrlo interesantno');
+
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

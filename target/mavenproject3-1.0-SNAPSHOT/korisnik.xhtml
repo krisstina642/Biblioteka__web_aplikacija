@@ -1,0 +1,484 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+        <style>
+            .lala.ui-panelgrid>*>tr,
+            .lala.ui-panelgrid .ui-panelgrid-cell {
+                border: none;
+                vertical-align: top;
+            }
+            .alignTop {
+                vertical-align: top;
+
+            }
+            .centeredColumnContent{
+                text-align: center;
+            }
+
+        </style>
+        <h:outputStylesheet library="css" name="styles.css"/>
+        <f:event type="preRenderView" listener="#{korisnikBean.initialize()}"></f:event>
+
+    </h:head>
+    <h:body>
+        <p:outputPanel class="pagepanel">
+            <h:form id="formakorisnikameni" enctype="multipart/form-data">
+                <p:growl id="msg" globalOnly="false" showDetail="true" life="4000" />
+                <p:megaMenu orientation="horizontal">
+
+                    <p:submenu label="Informacije" style="width: auto" >
+                        <p:column>
+                            <p:outputLabel value="#{korisnikBean.k.ime} #{korisnikBean.k.prezime}"/>
+                            <br></br>
+                            <p:graphicImage name="images/#{korisnikBean.k.slika}" width="200"/>
+                        </p:column>
+
+                        <p:column >
+                            <p:panelGrid columns="2" style="width: 500px">
+                                <p:outputLabel  value="Status:" style="width: 300px"/>
+                                <p:outputLabel  value="#{korisnikBean.k.tip}" style="width: 300px"/>
+
+                                <p:outputLabel style="width: auto" value="E-mail:"/>
+                                #{korisnikBean.k.email}
+                                <p:outputLabel value="Korisnicko ime:"/>
+                                #{korisnikBean.k.username}
+                                <p:outputLabel value="Datum rodjenja:"/>
+                                #{korisnikBean.k.datumrodjenja}
+                                <p:outputLabel value="Grad:"/>
+                                #{korisnikBean.k.grad}
+                                <p:outputLabel value="Drzava:"/>
+                                #{korisnikBean.k.drzava}
+                            </p:panelGrid>
+                            <p:commandButton value="Promeni podatke" ajax="changeform" update="formakorisnikameni" action="#{korisnikBean.dozvolipromenu()}" style="margin-right:20px;"/>
+                            <p:commandButton value="Promeni lozinku"  action="lozinka" style="margin-right:20px;"/>
+
+                            <br></br>
+                        </p:column>
+
+                    </p:submenu>
+
+                    <p:submenu label="Dodatno" style="width: auto" >
+                        <p:column>
+                            <p:outputLabel>
+                                <p:commandButton value="Dodaj novog korisnika" action="register" rendered="#{korisnikBean.k.tip eq 'admin'}" />
+                                <p:commandButton value="Dodaj novo desavanje" action="#{desavanjeBean.otvorinovodesavanje()}" rendered="#{korisnikBean.k.tip eq 'moderator' or korisnikBean.k.tip eq 'korisnik' }"/>
+                            </p:outputLabel>
+                        </p:column>
+                    </p:submenu>
+
+                    <f:facet name="options">
+
+                        <p:commandButton  id="desavanjazahtevi" value="Zahtevi" rendered="#{korisnikBean.k.tip ne 'admin'}"/>
+                        <p:overlayPanel  for="desavanjazahtevi" showCloseIcon="true">
+                            <p:outputLabel value="Nemate Novih Zahteva vezanih za Desavanja" rendered="#{korisnikBean.kljuceviucesca eq null or korisnikBean.kljuceviucesca.size() eq 0}"/>
+                            <h:dataTable value="#{korisnikBean.kljuceviucesca}" var="ittem" rendered="#{korisnikBean.kljuceviucesca ne null and korisnikBean.kljuceviucesca.size() ne 0}">
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Korisnik" />
+                                    </f:facet>
+                                    #{ittem.ko}
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Desavanje" />
+                                    </f:facet>
+                                    #{korisnikBean.getVrednost(ittem)}
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="T" action="#{korisnikBean.obradiZahtev(ittem,korisnikBean.getVrednost(i),true)}" update="@form"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="X" action="#{korisnikBean.obradiZahtev(ittem,korisnikBean.getVrednost(i),false)}" update="@form"/>
+                                </p:column>
+                            </h:dataTable>
+                        </p:overlayPanel>
+
+                        <p:commandButton id="zanrovii" value="Zanrovi" rendered="#{korisnikBean.k.tip eq 'admin'}"/>
+                        <p:overlayPanel id="Panelzanr" for="zanrovii" showCloseIcon="true">
+                            <h:dataTable id="datatable1" value="#{korisnikBean.svizanrovi}" var="item">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <p:inputText placeholder="Novi zanr" value="#{korisnikBean.novizanr}"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{item.naziv}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <p:commandButton value="Dodaj" action="#{korisnikBean.dodajzanr()}" update="@form"/>
+                                    </f:facet>
+                                    <p:commandButton value="X" action="#{korisnikBean.obrisiZanr(item)}" update="@form"/>
+                                </p:column>
+                            </h:dataTable>
+                        </p:overlayPanel>
+
+                        <p:commandButton id="zahtevi" value="Zahtevi" rendered="#{korisnikBean.k.tip eq 'admin'}"/>
+                        <p:overlayPanel id="Panel55" for="zahtevi" showCloseIcon="true">
+                            <p:outputLabel value="Nema pristiglih zahteva" rendered="#{korisnikBean.ucitajzahteve() eq null or korisnikBean.ucitajzahteve().size() eq 0 }"/>
+
+                            <h:dataTable value="#{korisnikBean.ucitajzahteve()}" var="itemm">
+                                <p:column>
+                                    <h:commandLink action="#{profilBean.poseta(itemm.username,'korisnik')}">
+                                        <p:graphicImage name="images/#{itemm.slika}" width="30" height="30" />
+                                    </h:commandLink>
+                                </p:column>
+                                <p:column>
+                                    <h:commandLink action="#{profilBean.poseta(itemm.username,'korisnik')}">
+                                        <h:outputText value="#{itemm.ime} #{itemm.prezime}"></h:outputText>
+                                    </h:commandLink>
+                                </p:column>
+                            </h:dataTable>
+                        </p:overlayPanel>
+
+                        <p:commandButton value="Desavanja" action="desavanja" />
+
+                        <p:commandButton id="Komentari" value="Komentari" />
+                        <p:overlayPanel  for="Komentari" showCloseIcon="true">
+                            <p:outputLabel rendered="#{korisnikBean.komentarisaneknjige eq null or korisnikBean.komentarisaneknjige.size() eq 0}" value="Niste ostavili ni jedan komentar" />
+                            <h:dataTable
+                                value="#{korisnikBean.komentarisaneknjige}" var="item" rendered="#{(korisnikBean.komentarisaneknjige ne null) and (korisnikBean.komentarisaneknjige.size() > 0)}">
+                                <p:column>
+                                    <f:facet name="header">
+                                        Naziv
+                                    </f:facet>
+                                    <h:commandLink action="#{knjigaBean.otvoriknjigu(item.knjiga(item.idknjige),'korisnik')}">
+                                        <h:outputText value="#{item.nazivKnjige(item.idknjige)}" />
+                                    </h:commandLink>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        Ocena
+                                    </f:facet>
+                                    #{item.ocena}
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        Autor/i
+                                    </f:facet>
+                                    <ui:repeat value="#{korisnikBean.autori(item.idknjige)}" var="a" varStatus="status">
+                                        #{a.ime} <p:outputLabel rendered="#{status.last eq false}"><br/></p:outputLabel>
+                                    </ui:repeat>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        Komentar
+                                    </f:facet>
+                                    #{item.komentar}
+                                </p:column>
+                            </h:dataTable>
+                        </p:overlayPanel>
+
+                        <p:commandButton id="grafik" value="Grafik"/>
+                        <p:overlayPanel id="Panel2" for="grafik" showCloseIcon="true">
+                            <p:chart type="pie" model="#{korisnikBean.pieModel1}" style="width:400px;height:300px" rendered="#{korisnikBean.pieModel1 ne null}"/>
+                            <p:outputLabel value="Jos niste procitali ni jednu knjigu" rendered="#{korisnikBean.pieModel1 eq null}"/>
+                        </p:overlayPanel>
+                        <p:commandButton id="dodajknjigu" value="Dodaj novu knjigu"/>
+                        <p:overlayPanel id="Panel" for="dodajknjigu" showCloseIcon="true">
+                            <p:panelGrid columns="1">
+
+                                <p:outputLabel value="Naziv knjige"/>
+                                <p:inputText value="#{registerBean.novaknjiga.naziv}" />
+
+                                <p:outputLabel value="Autori:"/>
+                                <p:inputTextarea id="focus" value="#{registerBean.autori}" title="Unesi Autore tako da svaki bude u posebnom redu"/>
+                                <p:tooltip id="toolTipFocus" for="focus" showEvent="focus" hideEvent="blur" />
+
+                                <p:outputLabel value="Zanrovi(max 3)"/>
+
+                                <p:selectManyMenu id="manymenu" value="#{registerBean.zanrovi}" showCheckbox="true" style="width:250px;height:200px" widgetVar="manu">
+                                    <f:selectItems value="#{korisnikBean.svizanrovi}" var="i" itemLabel="#{i.naziv}" itemValue="#{i.naziv}" itemDisabled="#{registerBean.zanrovi.size()>2 and (registerBean.zanrovi.contains(i.naziv) eq false)}" >
+                                    </f:selectItems>
+                                    <p:ajax process="@this" update="manymenu"/>
+                                </p:selectManyMenu>
+
+                                <p:outputLabel value="Kratak Opis"/>
+                                <p:inputTextarea value="#{registerBean.novaknjiga.opis}" />
+                                <p:outputLabel value="Slika:" />
+                                <p:fileUpload value="#{registerBean.imageKnjiga}" mode="simple" skinSimple="true" />
+                                <p:commandButton value="Dodaj knjigu" ajax="false" action="#{registerBean.dodajKnjigu(korisnikBean.k.tip eq 'admin')}"></p:commandButton>
+                            </p:panelGrid>
+
+                        </p:overlayPanel>
+                        <p:commandButton value="Odjavi se" action="#{loginBean.logout()}" />
+                    </f:facet>
+                </p:megaMenu>
+            </h:form >
+
+            <h:form id="changeform" rendered="#{korisnikBean.promena}" enctype="multipart/form-data" >
+                <p:growl id="msg2" globalOnly="true" showDetail="true" life="4000" />
+                <p:panel id="registerPnl" header="Izmeni podatke"
+                         style="width: 400px; margin: 0 auto; float: left" >
+                    <h:panelGrid id="changePanel" columns="3" cellpadding="5">
+
+                        <p:outputLabel id="oime" for="ime" value="Ime:" />
+                        <p:inputText id="ime" value="#{korisnikBean.k.ime}" required="true" label="Ime">
+                            <f:validateLength ></f:validateLength>
+                            <p:ajax update="msgime" event="keyup" />
+                            <p:ajax update="oime" event="keyup" />
+                            <p:ajax update="ime" event="keyup" />
+                        </p:inputText>
+                        <p:message for="ime" id="msgime" display="icon"  />
+
+                        <p:outputLabel id="oprezime" for="prezime" value="Prezime:" />
+                        <p:inputText id="prezime" value="#{korisnikBean.k.prezime}" required="true" label="Prezime">
+                            <f:validateLength ></f:validateLength>
+                            <p:ajax update="msgprez" event="keyup" />
+                            <p:ajax update="oprezime" event="keyup" />
+                            <p:ajax update="prezime" event="keyup" />
+                        </p:inputText>
+                        <p:message for="prezime" id="msgprez" display="icon" />
+
+                        <p:outputLabel id="odrodj" for="drodj" value="Datum rodjenja:" />
+                        <p:datePicker id="drodj" value="#{korisnikBean.date}" required="true" label="Datum rodjenja"/>
+                        <p:message for="drodj" id="msgdrodj" display="icon" />
+
+                        <p:outputLabel id="ograd" for="grad" value="Grad:" />
+                        <p:inputText id="grad" value="#{korisnikBean.k.grad}" required="true" label="Grad">
+                            <f:validateLength ></f:validateLength>
+                            <p:ajax update="msggrad" event="keyup" />
+                            <p:ajax update="ograd" event="keyup" />
+                            <p:ajax update="grad" event="keyup" />
+                        </p:inputText>
+                        <p:message for="grad" id="msggrad" display="icon" />
+
+                        <p:outputLabel id="odrz" for="drzava" value="Drzava:" />
+                        <p:inputText id="drzava" value="#{korisnikBean.k.drzava}" required="true" label="Drzava">
+                            <f:validateLength ></f:validateLength>
+                            <p:ajax update="msgdrz" event="keyup" />
+                            <p:ajax update="odrz" event="keyup" />
+                            <p:ajax update="drzava" event="keyup" />
+                        </p:inputText>
+                        <p:message for="drzava" id="msgdrz" display="icon" />
+
+                        <p:outputLabel id="oemail" for="email" value="E-mail:" />
+                        <p:inputText id="email" value="#{korisnikBean.k.email}" required="true" label="E-mail" validatorMessage="email is not valid">
+                            <f:validateLength ></f:validateLength>
+                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                            <p:ajax update="msgemail" event="keyup" />
+                            <p:ajax update="oemail" event="keyup" />
+                            <p:ajax update="email" event="keyup" />
+                        </p:inputText>
+                        <p:message for="email" id="msgemail" display="icon"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2" cellpadding="5" width="100%">
+                        <p:outputLabel id="pic" for="pic" value="Profilna slika:" />
+                        <p:fileUpload value="#{korisnikBean.image}" mode="simple" skinSimple="true" />
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" cellpadding="10" width="100%">
+                        <p:commandButton id="changebutton" value="Izmeni" action="#{korisnikBean.promenipodatke()}" ajax="false" style="float: right;"> <!--changeform-->
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+
+
+            <h:form id="formm">
+                <p:growl id="msg3" globalOnly="true" showDetail="true" life="4000" />
+                <p:panelGrid styleClass="lala">
+                    <p:row styleClass="alignTop">
+                        <p:column>
+                            <p:panel rendered="#{korisnikBean.procitane eq null or korisnikBean.procitane.size() eq 0}" style="width: 400px" styleClass="centeredColumnContent">
+                                <f:facet name="header">
+                                    Procitane Knjige
+                                </f:facet>
+                                <p:outputLabel value="Niste procitali ni jednu knjigu"/>
+                            </p:panel>
+                            <p:dataGrid var="k" value="#{korisnikBean.procitane}" columns="1" layout="grid"
+                                        rows="1" paginator="true"
+                                        paginatorTemplate=" {CurrentPageReport}{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="1,2,3" style="width: 400px" rendered="#{korisnikBean.procitane ne null and korisnikBean.procitane.size() ne 0}">
+
+                                <f:facet name="header">
+                                    Procitane Knjige
+                                </f:facet>
+                                <p:panel style="text-align:center">
+                                    <h:panelGrid columns="1" style="width:100%">
+                                        <h:commandLink action="#{knjigaBean.otvoriknjigu(k,'korisnik')}">
+                                            <h:panelGrid columns="2" cellpadding="5">
+                                                <p:graphicImage name="images/#{k.slika}" width="70" height="110" />
+                                                <h:outputText value="#{k.naziv}" />
+                                            </h:panelGrid>
+                                        </h:commandLink>
+                                    </h:panelGrid>
+                                </p:panel>
+
+                            </p:dataGrid>
+                        </p:column>
+                        <p:column>
+                            <p:panel rendered="#{korisnikBean.citam eq null or korisnikBean.citam.size() eq 0}" style="width: 400px" styleClass="centeredColumnContent">
+                                <f:facet name="header" >
+
+                                    <p:outputLabel value="Knjige koje trenutno citam"/>
+
+                                </f:facet>
+                                <p:outputLabel value="Trenutno ne citate ni jednu knjigu"/>
+                            </p:panel>
+                            <p:dataGrid var="k" value="#{korisnikBean.citam}" columns="1" layout="grid"
+                                        rows="1" paginator="true"
+                                        paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="1,2,3" style="width: 400px" rendered="#{korisnikBean.citam ne null and korisnikBean.citam.size() ne 0}">
+
+                                <f:facet name="header">
+                                    Knjige koje trenutno citam
+                                </f:facet>
+                                <p:panel style="text-align:center">
+                                    <h:panelGrid columns="1" style="width:100%">
+                                        <h:commandLink action="#{knjigaBean.otvoriknjigu(k,'korisnik')}">
+                                            <h:panelGrid columns="2" cellpadding="5">
+                                                <p:graphicImage name="images/#{k.slika}" width="70" height="110"/>
+                                                <h:outputText value="#{k.naziv}" />
+                                            </h:panelGrid>
+                                        </h:commandLink>
+                                    </h:panelGrid>
+                                </p:panel>
+
+                            </p:dataGrid>
+                        </p:column>
+                        <p:column>
+                            <p:panel rendered="#{korisnikBean.lista eq null or korisnikBean.lista.size() eq 0}" style="width: 400px" styleClass="centeredColumnContent">
+                                <f:facet name="header">
+                                    Knjige koje planiram da procitam
+                                </f:facet>
+                                <p:outputLabel value="Trenutno nemate knjiga u planu za citanje"/>
+                            </p:panel>
+
+                            <p:dataGrid var="k" value="#{korisnikBean.lista}" columns="1" layout="grid"
+                                        rows="1" paginator="true"
+                                        paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="1,2,3" style="width: 400px " rendered="#{korisnikBean.lista ne null and korisnikBean.lista.size() ne 0}" >
+
+                                <f:facet name="header">
+                                    Knjige koje planiram da procitam
+                                </f:facet>
+                                <p:panel style="text-align:center">
+                                    <h:panelGrid columns="1" style="width:100%">
+                                        <h:commandLink action="#{knjigaBean.otvoriknjigu(k,'korisnik')}">
+                                            <h:panelGrid columns="2" cellpadding="5">
+                                                <p:graphicImage name="images/#{k.slika}" width="70" height="110"/>
+                                                <h:outputText value="#{k.naziv}" />
+                                            </h:panelGrid>
+                                        </h:commandLink>
+                                    </h:panelGrid>
+                                </p:panel>
+
+                            </p:dataGrid>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+                <p:panelGrid layout="grid" columns="2" style="width: 100%" styleClass="lala">
+                    <p:outputPanel style="width: 50%">
+                        <p:panel style="width: min-content; float: left">
+                            <h:panelGrid id="korisnikPanel" columns="2" cellpadding="5">
+                                <p:outputLabel for="ime" value="Ime" />
+                                <p:inputText id="ime" value="#{korisnikBean.pretraga.ime}" label="Ime"/>
+                                <p:outputLabel for="prezime" value="Prezime" />
+                                <p:inputText id="prezime" value="#{korisnikBean.pretraga.prezime}" label="Prezime"/>
+                                <p:outputLabel for="kime" value="Korisnicko Ime" />
+                                <p:inputText id="kime" value="#{korisnikBean.pretraga.username}" label="Korisnicko Ime"/>
+                                <p:outputLabel for="E-mail" value="E-mail" />
+                                <p:inputText id="E-mail" value="#{korisnikBean.pretraga.email}" label="E-mail"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="1" cellpadding="5" width="100%">
+                                <p:commandButton id="pretraga2" action="#{korisnikBean.nadjiKorisnika()}" update="formm" ajax="true" value="Nadji korisnika" style="float: right;"/>
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:outputPanel>
+                    <p:outputPanel  style="float: right" >
+                        <p:panel style="width: min-content; float: right" >
+                            <h:panelGrid id="bookPanel" columns="2" cellpadding="5">
+                                <p:outputLabel for="naziv" value="Naziv:" />
+                                <p:inputText id="naziv" value="#{gostBean.naziv}" label="Naziv"/>
+                                <p:outputLabel for="autor" value="Autor" />
+                                <p:inputText id="autor" value="#{gostBean.autor}" label="Autor"/>
+                                <p:selectOneMenu id="lazy" value="#{gostBean.zanr}" dynamic="true" >
+                                    <f:selectItem itemLabel="Svi zanrovi" itemValue="Svi zanrovi"/>
+                                    <f:selectItems value="#{gostBean.zanrovi}" var="t" itemLabel="#{t.naziv}" itemValue="#{t.naziv}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid columns="1" cellpadding="5" width="100%">
+                                <p:commandButton id="pretraga" action="#{gostBean.pretrazi()}" update="formm" ajax="true" value="Pretrazi knjigu" style="float: right;"/>
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:outputPanel>
+
+                    <p:outputPanel style="width: 100%; float: left" >
+
+                        <p:carousel value="#{korisnikBean.trazenikorisnici}" headerText="Rezultati Pretrage Korisnika" var="kor" itemStyle="text-align:center" responsive="true" numVisible="3" style="width: 100%" rendered="#{korisnikBean.trazenikorisnici ne null and korisnikBean.trazenikorisnici.size() ne 0}" >
+                            <h:commandLink action="#{profilBean.posetaK(kor,'korisnik')}">
+                                <p:panelGrid columns="1" style="width:100%;margin:10px 0px" columnClasses="label,value" layout="grid" styleClass="ui-panelgrid-blank">
+                                    <f:facet name="header">
+                                        <p:graphicImage name="images/#{kor.slika}" width="70" height="90" />
+                                    </f:facet>
+
+                                    <h:outputText value="#{kor.ime} #{kor.prezime}" />
+                                    <h:outputText value="#{kor.username}" />
+                                    <h:outputText value="#{kor.email}"/>
+                                    <h:outputText value="#{kor.tip}" />
+                                    <h:outputText value="#{kor.grad}" />
+                                </p:panelGrid>
+                            </h:commandLink>
+
+                            <f:facet name="footer">
+                                Ukupno #{fn:length(korisnikBean.trazenikorisnici)} korisnika.
+                            </f:facet>
+                        </p:carousel>
+                    </p:outputPanel>
+
+                    <p:outputPanel style="width: 100%; float: right">
+                        <p:dataGrid var="k" value="#{gostBean.knjige}" columns="3" rows="6" layout="grid"
+                                    paginator="true" id="cars"
+                                    paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                    rowsPerPageTemplate="6,9,12" rendered="#{gostBean.knjige ne null and gostBean.knjige.size() ne 0}"  >
+
+                            <f:facet name="header">
+                                Rezultati Pretrage
+                            </f:facet>
+                            <p:panel style="text-align:center; #{(k.status eq 'na cekanju')? 'background-color: gainsboro':'background-color: white'}">
+                                <h:panelGrid columns="1" style="width:100%">
+                                    <h:commandLink action="#{knjigaBean.otvoriknjigu(k,'korisnik')}">
+                                        <h:panelGrid columns="2" cellpadding="5">
+                                            <p:graphicImage name="images/#{k.slika}" width="70" height="110" />
+                                            <h:outputText value="#{k.naziv}" />
+
+                                        </h:panelGrid>
+                                    </h:commandLink>
+
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataGrid>
+                    </p:outputPanel>
+
+
+                </p:panelGrid>
+
+            </h:form>
+            <p:outputPanel id="empty" style="height: 50px"/>
+        </p:outputPanel>
+
+
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+
+    </h:body>
+</html>
+

@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <f:event type="preRenderView" listener="#{knjigaBean.podacioknjizi()}"></f:event>
+        <title>Facelet Title</title>
+        <style type="text/css">
+
+            .alignTop {
+                vertical-align: top;
+            }
+        </style>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+
+        <p:outputPanel class="pagepanel">
+            <h:form id="rgform2">
+                <p:menubar>
+                    <f:facet name="options">
+
+                        <p:commandButton value="Prijavi se" rendered="#{(knjigaBean.korisnik eq null)}" action="index" />
+                        <p:commandButton value="Registruj se" rendered="#{(knjigaBean.korisnik eq null)}" action="register" />
+                        <p:commandButton value="Desavanja" rendered="#{(knjigaBean.korisnik eq null)}" action="desavanja" />
+
+                        <p:commandButton value="Izmeni Podatke" rendered="#{korisnikBean.k.tip eq 'admin'}" action="#{knjigaBean.setPromenipodatke(true)}" update="infooknjizi"/>
+                        <p:commandButton value="Nazad" action="#{knjigaBean.nazad()}" />
+                        <p:commandButton value="Odjavi se" action="#{loginBean.logout()}" rendered="#{not (knjigaBean.korisnik eq null)}"/>
+                    </f:facet>
+                </p:menubar>
+            </h:form >
+            <h:form id="infooknjizi">
+                <p:panelGrid style=" margin: 0 auto;">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="7">#{knjigaBean.knjiga.naziv}</p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column >Informacije</p:column>
+                            <p:column >Komentari korisnika</p:column>
+                        </p:row>
+                    </f:facet>
+
+                    <p:row styleClass="alignTop">
+                        <p:column >
+                            <p:graphicImage name="images/#{knjigaBean.knjiga.slika}" width="300" height="450"/><br/>
+
+                            <p:panelGrid columns="2" rendered="#{knjigaBean.promenipodatke}">
+                                <p:outputLabel value=" Datum Izdavanja"/>
+                                <p:datePicker value="#{knjigaBean.datum}" required="true" label="Datum izdavanja" />
+                                <p:outputLabel value=" Zanr" />
+
+                                <p:selectManyMenu id="manymenu" value="#{knjigaBean.zanrovi}" showCheckbox="true" style="width:250px;height:200px" widgetVar="manu">
+                                    <f:selectItems value="#{korisnikBean.svizanrovi}" var="i" itemLabel="#{i.naziv}" itemValue="#{i.naziv}" itemDisabled="#{knjigaBean.zanrovi.size()>2 and (knjigaBean.zanrovi.contains(i.naziv) eq false)}" >
+                                    </f:selectItems>
+                                    <p:ajax process="@this" update="manymenu"/>
+                                </p:selectManyMenu>
+
+                                <p:outputLabel value=" Prosecna Ocena" />
+                                <p:inputNumber value="#{knjigaBean.knjiga.ocena}" rendered="#{knjigaBean.promenipodatke}"/>
+                                <p:outputLabel value=" Autori" />
+                                <p:inputTextarea id="focus" value="#{knjigaBean.izmenjeniautori}" title="Unesi Autore tako da svaki bude u posebnom redu" rendered="#{knjigaBean.promenipodatke}"/>
+                                <p:outputLabel value=" Opis" />
+                                <p:inputTextarea style="width: 300px" rendered="#{knjigaBean.promenipodatke}" value="#{knjigaBean.knjiga.opis}"/>
+                                <p:commandButton value="Izmeni"
+                                                 action="#{knjigaBean.izmenipodatkeoknjizi()}" update="infooknjizi" />
+                            </p:panelGrid>
+
+                            <p:outputPanel rendered="#{knjigaBean.promenipodatke eq false}">
+                                <p:outputLabel value=" Datum Izdavanja: " />
+                                <p:outputLabel value=" #{knjigaBean.knjiga.datum}"/><br/>
+                                <p:outputLabel value=" Zanr: " />
+                                <ui:repeat value="#{knjigaBean.zanrovi}" var="a" varStatus="status">
+                                    #{a}#{status.last?'':', '}
+                                </ui:repeat><br/>
+
+                                <p:outputLabel value=" Prosecna Ocena: " />
+                                <p:outputLabel value=" #{knjigaBean.knjiga.ocena}"/><br/>
+
+                                <p:outputLabel value=" Autori: " />
+                                <ui:repeat value="#{knjigaBean.autori}" var="a" varStatus="status" >
+                                    #{a.ime}#{status.last?'':', '}
+                                </ui:repeat><br/>
+                                Opis:
+                                <p:outputPanel style="width: 300px">  #{knjigaBean.knjiga.opis}</p:outputPanel>
+
+                            </p:outputPanel>
+
+
+                            <p:panelGrid columns="1" rendered="#{knjigaBean.knjiga.status eq 'odobrena'}">
+
+                                <p:commandButton value="Dodaj u listu za citanje" update="infooknjizi" action="#{knjigaBean.dodajzacitanje()}" ajax="true" rendered="#{knjigaBean.renderdodajzacitanje()}" style="float: right;"/>
+                                <p:commandButton value="Izbaci iz liste za citanje" update="infooknjizi" action="#{knjigaBean.izbacizacitanje()}" ajax="true" rendered="#{knjigaBean.citaonica.status eq 'lista'}" style="float: right;"/>
+                                <p:commandButton value="Pocini sa citanjem" update="infooknjizi" action="#{knjigaBean.setStatus('cita')}" ajax="true" rendered="#{knjigaBean.citaonica.status eq 'lista'}" style="float: right;"/>
+                                <p:commandButton value="Oznaci kao procitano" update="infooknjizi" action="#{knjigaBean.setStatus('procitana')}" ajax="true" rendered="#{knjigaBean.korisnik!=null and (knjigaBean.citaonica.status ne 'procitana')}" style="float: right;"/>
+
+                            </p:panelGrid>
+                            <p:panelGrid rendered="#{(knjigaBean.korisnik.tip eq 'moderator' or knjigaBean.korisnik.tip eq 'admin') and (knjigaBean.knjiga.status eq 'na cekanju')}">
+                                <p:row>
+                                    <p:outputLabel value="Ova knjiga jos uvek nije odobrena" style="color: red"/><br/>
+                                    <p:commandButton value="Odobri knjigu" update="infooknjizi" action="#{knjigaBean.odobriKnjigu()}" ajax="true" style="float: right;"/>
+
+                                </p:row>
+
+                            </p:panelGrid>
+                        </p:column>
+                        <p:column >
+                            <p:outputLabel value="Niko nije komentarisao" rendered="#{knjigaBean.komentari eq null or knjigaBean.komentari.size() eq 0 }"/>
+                            <p:dataList value="#{knjigaBean.komentari}" var="k" type="none" rendered="#{knjigaBean.komentari ne null and knjigaBean.komentari.size() ne 0}">
+                                <p:panel>
+                                    <h:commandLink action="#{profilBean.poseta(k.korisnik,'knjiga')}" value="#{k.korisnik}" rendered="#{knjigaBean.korisnik ne null}"/>
+                                    <p:outputLabel value="#{knjigaBean.imekorisnika(k.korisnik)}" rendered="#{knjigaBean.korisnik eq null}"/>
+                                    <p:rating value="#{k.ocena}" stars="10" readonly="true" />
+                                    <p:outputPanel>#{k.komentar}</p:outputPanel>
+                                </p:panel>
+                            </p:dataList>
+
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+                <p:growl id="null" showDetail="true" life="4000" for="msgg" />
+                <h:panelGrid columns="1" style="margin: 0 auto" rendered="#{'cita' eq knjigaBean.citaonica.status}">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Trenutno procitano strana"/>
+                        <p:outputLabel value="Max broj strana knjige"/>
+                        <p:inputNumber value="#{knjigaBean.citaonica.trenutno}" label="trenutno procitano"></p:inputNumber>
+                        <p:inputNumber value="#{knjigaBean.citaonica.max}" label="max broj strana"></p:inputNumber>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="margin-bottom: 10px" width="100%">
+                        <p:outputLabel value="Progress Bar"/>
+                        <p:progressBar value="#{knjigaBean.progress()}" displayOnly="true" labelTemplate="{value}%"/>
+                        <p:commandButton value="Potvrdi" update="infooknjizi" action="#{knjigaBean.updateprogress()}"> </p:commandButton>
+                    </h:panelGrid>
+                </h:panelGrid>
+                <h:panelGrid columns="1" id="panel2" style="margin: 0 auto" rendered="#{knjigaBean.progress() >= 50}">
+                    <p:outputLabel value="Ocena:"/>
+                    <p:rating  cancel="false" value="#{knjigaBean.citaonica.ocena}" stars="10"/>
+                    <p:outputLabel value="Komentar:"/>
+                    <p:inputTextarea value="#{knjigaBean.citaonica.komentar}"></p:inputTextarea>
+                    <p:commandButton value="Potvrdi" update="infooknjizi" action="#{knjigaBean.updatecomm()}"> </p:commandButton>
+                </h:panelGrid >
+
+            </h:form>
+        </p:outputPanel>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+
+
+    </h:body>
+</html>
+

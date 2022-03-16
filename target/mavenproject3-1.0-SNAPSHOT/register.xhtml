@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script type="text/javascript">
+        </script>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+        <p:outputPanel class="pagepanel">
+            <h:form id="rgform">
+                <p:menubar>
+
+                    <f:facet name="options">
+                        <p:commandButton value="Login" action="index" rendered="#{korisnikBean==null or korisnikBean.k==null}" />
+                        <p:commandButton value="Nazad" action="korisnik" rendered="#{korisnikBean!=null and korisnikBean.k!=null and korisnikBean.k.tip eq 'admin'}"/>
+                    </f:facet>
+                </p:menubar>
+            </h:form>
+
+            <h:form id="registerForm" enctype="multipart/form-data">
+                <p:growl id="msg" showDetail="true" life="4000" />
+                <p:panel id="registerPnl" header="Register"
+                         style="width: 400px; margin: 0 auto;">
+                    <h:panelGrid id="registerPanel" columns="3" cellpadding="5">
+
+                        <p:outputLabel id="oime" for="ime" value="Ime:" />
+                        <p:inputText id="ime" value="#{registerBean.k.ime}" required="true" label="Ime" requiredMessage="Greska! Unesite ime">
+                            <f:validateLength/>
+                            <p:ajax update="msgime" event="keyup" />
+                            <p:ajax update="oime" event="keyup" />
+                            <p:ajax update="ime" event="keyup" />
+                        </p:inputText>
+                        <p:message for="ime" id="msgime" display="icon" />
+
+                        <p:outputLabel id="oprezime" for="prezime" value="Prezime:" />
+                        <p:inputText id="prezime" value="#{registerBean.k.prezime}" required="true" label="Prezime" requiredMessage="Greska! Unesite prezime">
+                            <f:validateLength/>
+                            <p:ajax update="msgprez" event="keyup" />
+                            <p:ajax update="oprezime" event="keyup" />
+                            <p:ajax update="prezime" event="keyup" />
+                        </p:inputText>
+                        <p:message for="prezime" id="msgprez" display="icon" />
+
+                        <p:outputLabel id="ousername" for="username" value="Korisnicko ime:" />
+                        <p:inputText id="username" value="#{registerBean.k.username}" required="true" label="Korisnicko ime" requiredMessage="Greska! Unesite korisnicko ime">
+                            <f:validateLength/>
+                            <p:ajax update="msgusr" event="keyup" />
+                            <p:ajax update="ousername" event="keyup" />
+                            <p:ajax update="username" event="keyup" />
+                        </p:inputText>
+                        <p:message for="username" id="msgusr" display="icon" />
+
+                        <p:outputLabel id="opassword" for="password" value="Lozinka" />
+                        <p:password id="password" value="#{registerBean.k.lozinka}"
+                                    feedback="true" required="true" label="Lozinka" title="Lozinka mora da sadrzi min 7 karaktera, veliko slovo, broj i specijalni karakter i mora pocinjati slovom" requiredMessage="Greska! Unesite lozinku" validatorMessage="Greska! Lozinka nije u trazenom formatu, kliknite na polje za vise informacija">
+                            <f:validateRegex pattern="^(?=.*\d)(?=.*[@#$%])(?=.*[A-Z])[a-zA-Z][a-zA-Z\d@$!%*#?]{6,}$" />
+
+                        </p:password>
+                        <p:outputLabel>
+                            <p:tooltip id="toolTipFocus" for="password" showEvent="focus" hideEvent="blur" />
+                            <p:message for="password" id="msgpass" display="icon" />
+                        </p:outputLabel>
+
+                        <p:outputLabel id="opassword2" for="password2" value="Potvrda lozinke" />
+                        <p:password id="password2" value="#{registerBean.password}"
+                                    feedback="false" required="true" label="Lozinka2" requiredMessage="Greska! Unesite lozinku jos jednom">
+
+                        </p:password>
+                        <p:message for="password2" id="msgpass2" display="icon" />
+
+                        <p:outputLabel id="odrodj" for="drodj" value="Datum rodjenja:" />
+
+                        <p:datePicker id="drodj" value="#{registerBean.date}" required="true" label="Datum rodjenja" requiredMessage="Greska! Unesite datum rodjenja"/>
+                        <p:message for="drodj" id="msgdrodj" display="icon" />
+
+                        <p:outputLabel id="ograd" for="grad" value="Grad:" />
+                        <p:inputText id="grad" value="#{registerBean.k.grad}" required="true" label="Grad" requiredMessage="Greska! Unesite grad">
+                            <f:validateLength/>
+                            <p:ajax update="msggrad" event="keyup" />
+                            <p:ajax update="ograd" event="keyup" />
+                            <p:ajax update="grad" event="keyup" />
+                        </p:inputText>
+                        <p:message for="grad" id="msggrad" display="icon" />
+
+                        <p:outputLabel id="odrz" for="drzava" value="Drzava:" />
+                        <p:inputText id="drzava" value="#{registerBean.k.drzava}" required="true" label="Drzava" requiredMessage="Greska! Unesite drzavu">
+                            <f:validateLength />
+                            <p:ajax update="msgdrz" event="keyup" />
+                            <p:ajax update="odrz" event="keyup" />
+                            <p:ajax update="drzava" event="keyup" />
+                        </p:inputText>
+                        <p:message for="drzava" id="msgdrz" display="icon" />
+
+                        <p:outputLabel id="oemail" for="email" value="E-mail:" />
+                        <p:inputText id="email" value="#{registerBean.k.email}" required="true" label="E-mail" validatorMessage="Greska! E-mail nije korektno unet" requiredMessage="Greska! Unesite e-mail">
+                            <f:validateLength/>
+                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                            <p:ajax update="msgemail" event="keyup" />
+                            <p:ajax update="oemail" event="keyup" />
+                            <p:ajax update="email" event="keyup" />
+                        </p:inputText>
+                        <p:message for="email" id="msgemail" display="icon"/>
+
+
+
+                        <p:outputLabel for="tip" value="Tip:" rendered="#{korisnikBean!=null and (korisnikBean.k!=null and korisnikBean.k.tip eq 'admin')}"/>
+
+                        <p:selectOneListbox id="tip" value="#{registerBean.k.tip}" rendered="#{korisnikBean!=null and (korisnikBean.k!=null and korisnikBean.k.tip eq 'admin')}" >
+                            <f:selectItem itemValue="korisnik" itemLabel="korisnik" />
+                            <f:selectItem itemValue="moderator" itemLabel="moderator"/>
+                        </p:selectOneListbox>
+
+
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2" cellpadding="5" width="100%">
+                        <p:outputLabel id="pic" for="pic" value="Profilna slika:" />
+                        <p:fileUpload value="#{registerBean.image}" mode="simple" skinSimple="true" />
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" cellpadding="10" width="100%">
+
+                        <p:captcha label="Captcha" rendered="#{korisnikBean==null or korisnikBean.k==null or (korisnikBean.k!=null and korisnikBean.k.tip!='admin')}" requiredMessage="Popunite Captcha polje" />
+
+                        <p:commandButton id="loginButton" action="#{registerBean.register((korisnikBean!=null and korisnikBean.k!=null and korisnikBean.k.tip eq 'admin'))}"  ajax="false" value="Register" style="float: right;"/>
+
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </p:outputPanel>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+
+    </h:body>
+</html>
+

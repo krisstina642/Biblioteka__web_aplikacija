@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title> Gost </title>
+        <style>
+
+            table.search {
+                width: 50%;
+            }
+            table.search a {
+                display: block;
+            }
+            .ui-datascroller .ui-datascroller-item {
+
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+            .alignTop {
+                vertical-align: top; align-content: center; align-items: center; align-self: center;
+            }
+
+        </style>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+        <p:outputPanel class="pagepanel">
+            <h:form id="rgform2">
+                <p:menubar>
+                    <f:facet name="options">
+                        <p:commandButton value="Desavanja" action="desavanja"></p:commandButton>
+                        <p:commandButton value="Login" action="index" />
+                        <p:commandButton value="Register" action="register" />
+                    </f:facet>
+                </p:menubar>
+            </h:form>
+
+            <h:form id="rgform">
+                <p:panel style="width: min-content; margin: 0 auto">
+                    <p:panelGrid style="width: max-content; margin: 0 auto" >
+                        <p:row styleClass="alignTop">
+                            <p:column>
+                                <h:panelGrid id="bookPanel" columns="2" cellpadding="5">
+                                    <p:outputLabel for="naziv" value="Naziv:" />
+                                    <p:inputText id="naziv" value="#{gostBean.naziv}" label="Naziv"/>
+                                    <p:outputLabel for="autor" value="Autor" />
+                                    <p:inputText id="autor" value="#{gostBean.autor}" label="Autor"/>
+
+                                    <p:selectOneMenu id="lazy" value="#{gostBean.zanr}" dynamic="true">
+                                        <f:selectItem itemLabel="Svi zanrovi" itemValue="Svi zanrovi"/>
+                                        <f:selectItems value="#{gostBean.zanrovi}" var="t" itemLabel="#{t.naziv}" itemValue="#{t.naziv}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:commandButton id="pretraga" action="#{gostBean.pretrazi()}" update="rgform" ajax="true" value="Pretrazi knjigu" style="float: right;">
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </p:column>
+                        </p:row >
+                    </p:panelGrid>
+
+                    <p:dataGrid var="k" value="#{gostBean.knjige}" columns="3" rows="9" layout="grid"
+                                paginator="true" id="cars"
+                                paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="6,9,12" rendered="#{gostBean.knjige ne null and gostBean.knjige.size() ne 0}" style="width: 1200px " >
+
+                        <f:facet name="header">
+                            Rezultati Pretrage
+                        </f:facet>
+                        <p:panel style="text-align:center; #{(k.status eq 'na cekanju')? 'background-color: gainsboro':'background-color: white'}">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <h:commandLink action="#{knjigaBean.otvoriknjigu(k,'gost')}" disabled="#{k.status eq 'na cekanju'}">
+                                    <h:panelGrid columns="2" cellpadding="5">
+                                        <p:graphicImage name="images/#{k.slika}" width="70" height="110" />
+                                        <h:outputText value="#{k.naziv}" />
+
+                                    </h:panelGrid>
+                                </h:commandLink>
+
+                            </h:panelGrid>
+                        </p:panel>
+
+                    </p:dataGrid>
+
+                </p:panel>
+            </h:form>
+        </p:outputPanel>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+
+    </h:body>
+</html>
+

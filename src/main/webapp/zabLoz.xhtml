@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="styles.css"/>
+    </h:head>
+    <h:body>
+        <p:outputPanel class="pagepanel">
+
+            <h:form id="form">
+                <p:menubar>
+
+                    <f:facet name="options">
+                        <p:commandButton value="Nazad" action="index" />
+                    </f:facet>
+                </p:menubar>
+            </h:form>
+
+            <h:form id="loginForm">
+                <p:growl showDetail="true" life="4000"/>
+                <p:panel id="loginPnl" header="Zaboravljena lozinka"
+                         style="width: 350px; margin: 0 auto;">
+                    <p:outputPanel  >
+                        <h:panelGrid id="loginPanel" columns="2" cellpadding="5">
+
+                            <p:outputLabel for="username" value="Korisnicko ime:" />
+                            <p:inputText id="username" value="#{loginBean.uname}" label="Korisnicko ime" requiredMessage="Unesite korisnicko ime" />
+
+                        </h:panelGrid>
+                    </p:outputPanel>
+                    <h:panelGrid columns="1" cellpadding="5" width="100%">
+                        <p:commandButton id="loginButton" action="#{loginBean.zaboravljenalozinka()}"
+                                         value="Posalji Lozinku" update="loginForm" ajax="true" style="float: right;"/>
+
+
+                    </h:panelGrid>
+                </p:panel>
+                <p:blockUI block="loginPnl" trigger="loginButton">
+                    <p:graphicImage name="gif/loader.gif"  width="40px"/>
+                </p:blockUI>
+
+            </h:form>
+        </p:outputPanel>
+        <p:outputPanel id="footer">
+            <p:menubar>
+                <f:facet name="options" >
+                    <p:outputPanel style="margin-right: 15px ">
+                        <p>Autor: Kristina Babic <br/>
+                            <a href="mailto:bk170245d@student.etf.bg.ac.rs">bk170245d@student.etf.bg.ac.rs</a></p>
+                    </p:outputPanel>
+                </f:facet>
+            </p:menubar>
+        </p:outputPanel>
+    </h:body>
+
+</html>
+
